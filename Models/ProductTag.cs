@@ -2,7 +2,7 @@
 
 namespace Digital_Product_Catalogue.Models
 {
-    public class ProductImage
+    public class ProductTag
     {
         [Key]
         public int Id { get; set; }
@@ -11,10 +11,12 @@ namespace Digital_Product_Catalogue.Models
         [Range(0, int.MaxValue)]
         public int ProductId { get; set; } // Foreign Key
 
-        [Required(ErrorMessage = "Image path is required.")]
-        public string ImageURL { get; set; }
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int TagId { get; set; } // Foreign Key
 
-        // Navigation Property
-        public Product products { get; set; }
+        // navigation property
+        public Product Product { get; set; }
+        public Tag Tag { get; set; }
     }
 }
