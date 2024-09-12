@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ProductResponse>
+
+@{
+    ViewBag.Tile = "Product";
+}
+
+
+<h1> All Product For Admin Show here </h1>
+
+<div>
+    @{
+        foreach(var product in Model)
+        {
+            <div class="card" style="width: 18rem;">
+                <img src="~/Products/@product.FeatureImageURL" class="card-img-top" alt="Image">
+                <div class="card-body">
+                    <input type="hidden" value="@product.Id" />
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text">@product.Price</p>
+                    <button class="btn btn-primary" onclick="showDetails(@Html.Raw(Json.Serialize(product)))">Details</button>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts{
+
+    <script>
+
+        function showDetails(product)
+        {
+            console.log(JSON.parse(product));
+        }
+
+    </script>
+
+}

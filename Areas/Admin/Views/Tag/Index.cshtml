@@ -1,0 +1,55 @@
+﻿@model TagRequest
+
+@{
+    ViewBag.Title = "Add Tag";
+}
+
+<div class="w-75 mx-auto d-flex flex-column">
+
+
+    <form asp-action="AddTag" asp-controller="Tag" method="post">
+        <div class="form-group mb-3">
+            <label asp-for="Name">Tag Name</label>
+            <input class="form-control" asp-for="Name" placeholder="Enter Tag Name">
+            <span asp-validation-for="Name" class="danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create</button>
+
+        <div asp-validation-summary="All" class="error"></div>
+
+        @if (ViewBag.Errors != null)
+        {
+            <div class="danger ml">
+                <ul>
+                    @foreach (string error in ViewBag.Errors)
+                    {
+                        <li class="ml">@error</li>
+                    }
+                </ul>
+            </div>
+        }
+    </form>
+</div>
+
+@* <table class="table table-striped shadow-sm p-3 my-2 rounded p-3" id="TagTable">
+    <thead>
+        <tr>
+            <th>Tag ID</th>
+            <th>Tag Name</th>
+            <th>Create At</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tag in Model.Tags)
+        {
+            <tr>
+                <td>@tag.Id</td>
+                <td>@tag.Name</td>
+                <td>@tag.CreatedAt</td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+
+

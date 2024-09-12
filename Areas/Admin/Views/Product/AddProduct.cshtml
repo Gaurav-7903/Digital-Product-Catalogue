@@ -1,0 +1,184 @@
+﻿@model ProductRequestDTO
+@{
+    ViewBag.Title = "Add Product";
+}
+
+<div class="w-75 mx-auto d-flex flex-column">
+
+
+    <form asp-action="AddProduct" asp-controller="Product" method="post" enctype="multipart/form-data">
+        <div class="form-group mb-3">
+
+            <label asp-for="Name">Product Name</label>
+            <input class="form-control" asp-for="Name" placeholder="Enter Product Name">
+            <span asp-validation-for="Name" class="danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Description">Product Price</label>
+            <input class="form-control" asp-for="Description" placeholder="Enter Product Description">
+            <span asp-validation-for="Description" class="danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Price">Product Price</label>
+            <input class="form-control" asp-for="Price" placeholder="Enter Product Price">
+            <span asp-validation-for="Price" class="danger"></span>
+        </div>
+
+        
+        <div class="form-group mb-3">
+            <label for="Tags">Tag</label>
+            <select multiple class="selectpicker" data-live-search="true" asp-for="Tags">
+                @foreach (var Tag in ViewBag.Tags)
+                {
+                    <option value="@Tag.Id">@Tag.Name</option>
+                }
+            </select>
+        </div>
+
+        <!-- Image Selection -->
+        <div class="form-group mb-3">
+            <label for="Images">Upload Images</label>
+            <input class="form-control" type="file" asp-for="Images" multiple>
+            <span asp-validation-for="Images" class="danger"></span>
+        </div>
+
+        <!-- Display Images with Radio Buttons for Featured Image Selection -->
+        <div class="form-group mb-3">
+            <label>Select Featured Image</label>
+            <div id="imageSelection">
+                <!-- Image radio buttons will be dynamically inserted here -->
+            </div>
+        </div>
+
+
+
+
+
+        <button type="submit" class="btn btn-primary">Create</button>
+
+        <div asp-validation-summary="All" class="error"></div>
+
+        @if (ViewBag.Errors != null)
+        {
+            <div class="danger ml">
+                <ul>
+                    @foreach (string error in ViewBag.Errors)
+                    {
+                        <li class="ml">@error</li>
+                    }
+                </ul>
+            </div>
+        }
+    </form>
+
+</div>
+
+@section Scripts{
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    <script>
+     
+        $(document).ready(function () {
+
+            $('select').selectpicker();
+
+            $('input.form-control').on('input', function () {
+                let search = $(this).val().trim();
+                console.log(search);
+
+                let $dropdownMenu = $('ul.dropdown-menu');
+                let $lastItem = $dropdownMenu.find('li.add-tag');
+
+                if (search.length > 0) {
+                    if ($lastItem.length > 0) {
+               
+                        $lastItem.text(`Add "${search}" as a new tag`);
+                        $lastItem.data('tag', search);
+                    } else {
+
+                        $dropdownMenu.append(`<li class="add-tag dropdown-item">Add "${search}" as a new tag</li>`);
+                    }
+                } else {
+                    
+                    $lastItem.remove();
+                }
+
+            })
+
+            $(document).on('click', 'li.add-tag', function () {
+                let newTag = $(this).data('tag'); 
+                console.log('Adding new tag:', newTag);
+
+            
+                $.ajax({
+                    url: '/Tag/AddTag',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ name: newTag }),  
+                    success: function (response) {
+                     
+                        console.log('Tag added:', response);
+
+
+                        // $('ul.dropdown-menu').append(
+                        //     `<li><a role="option" class="dropdown-item" aria-disabled="false" tabindex="0" aria-selected="false"><span class=" bs-ok-default check-mark"></span><span class="text">${newTag}</span></a></li>`
+                        // );
+
+                        $('select.selectpicker').append(
+                            `<option value="${response.tag.id}" selected>${response.tag.name}</option>`
+                        );
+
+                        $('select.selectpicker').selectpicker('refresh');
+
+                       
+                        $('li.add-product').remove();
+                    },
+                    error: function () {
+                       
+                        alert('Error adding tag.');
+                    }
+                });
+            });
+
+
+            // For rendering Image ans Select Image
+
+            $(document).ready(function () {
+                // Function to update radio buttons when images are uploaded
+                function updateImageSelection() {
+                    let imageSelectionDiv = $('#imageSelection');
+                    imageSelectionDiv.empty();
+
+                    // Retrieve images from the form (or dynamically from the server)
+                    let images = $("input[type='file']")[0].files;
+                    for (let i = 0; i < images.length; i++) {
+                        let reader = new FileReader();
+                        reader.onload = function (e) {
+                            let imageUrl = e.target.result;
+                            let radioHtml = `
+                                <div class="form-check">
+                                <input class="form-check-input" type="radio" name="FeaturedImageIndex" id="featuredImage${i}" value="${i}">
+                                <label class="form-check-label" for="featuredImage${i}">
+                                    <img src="${imageUrl}" alt="Image ${i}" style="width: 100px; height: 100px; object-fit: cover;"/>
+                                </label>
+                                </div>
+                                `;
+                            imageSelectionDiv.append(radioHtml);
+                        };
+                        reader.readAsDataURL(images[i]);
+                    }
+                }
+
+                // Bind change event to file input
+                $("input[type='file']").change(updateImageSelection);
+            });
+
+        });
+
+
+    </script>
+   
+}
