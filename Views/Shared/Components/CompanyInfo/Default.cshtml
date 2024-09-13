@@ -1,0 +1,9 @@
+﻿@model CompanyResponseDTO
+
+<div class="company-info">
+    <img src="/Products/@Model.LogoURL" alt="@Model.Name" class="company-logo" />
+    <h1>@Model.Name</h1>
+    <p>@Model.Information</p>
+    <p>Website: <a href="@Model.Website">@Model.Website</a></p>
+    <p>Contact: @Model.MobileNumber</p>
+</div>

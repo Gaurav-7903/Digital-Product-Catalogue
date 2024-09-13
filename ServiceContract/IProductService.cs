@@ -8,5 +8,7 @@ namespace Digital_Product_Catalogue.ServiceContract
         Task<ProductResponse> AddProduct(ProductRequestDTO product);
 
         List<ProductResponse> GetAllProducts();
+
+        ProductResponse GetProductById(int productId);
     }
 }

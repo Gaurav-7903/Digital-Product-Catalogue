@@ -1,4 +1,5 @@
-﻿using Digital_Product_Catalogue.Models;
+﻿using Digital_Product_Catalogue.Migrations;
+using Digital_Product_Catalogue.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,8 @@ namespace Digital_Product_Catalogue.Data
         public virtual DbSet<ProductImage> ProductImages { get; set; }
         public virtual DbSet<Wishlist> Wishlists { get; set; }
 
+        public virtual DbSet<CompanyInfo> CompanyInfo { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -27,6 +30,7 @@ namespace Digital_Product_Catalogue.Data
             builder.Entity<ProductTag>().ToTable(nameof(ProductTag));
             builder.Entity<ProductImage>().ToTable(nameof(ProductImage));
             builder.Entity<Wishlist>().ToTable(nameof(Wishlist));
+            builder.Entity<CompanyInfo>().ToTable(nameof(CompanyInfo));
         }
 
     }

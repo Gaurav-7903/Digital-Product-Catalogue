@@ -2,6 +2,7 @@ using Digital_Product_Catalogue.Data;
 using Digital_Product_Catalogue.Models;
 using Digital_Product_Catalogue.ServiceContract;
 using Digital_Product_Catalogue.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ builder.Services.AddControllersWithViews();
 // DI Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
 
 
 
@@ -29,8 +32,30 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
-    .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, int>>() // // Manipulating the User Data
-    .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, int>>(); // Manipulating the Role Data
+    .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, int>>()
+    .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, int>>();
+
+
+// Authentication and Authentication and Authorization Service
+builder.Services.AddAuthorization(option =>
+{
+    option.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    option.AddPolicy("NotAuthorized", policy =>
+    {
+        policy.RequireAssertion(context =>
+        {
+            return !context.User.Identity.IsAuthenticated;
+        });
+    });
+});
+
+builder.Services.ConfigureApplicationCookie(option =>
+{
+    option.LoginPath = "/Account/Login";
+});
+
+
+
 
 var app = builder.Build();
 

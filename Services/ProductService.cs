@@ -116,5 +116,25 @@ namespace Digital_Product_Catalogue.Services
             return products;
         }
 
+        public ProductResponse GetProductById(int productId)
+        {
+            if(productId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(productId));
+            }
+            var product = _context.Products.Where(p => p.Id == productId).Select(product => new ProductResponse()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                FeatureImageURL = product.FeatureImage,
+                ImagesURL = _context.ProductImages.Where(p => p.ProductId == product.Id).Select(p => p.ImageURL).ToList(),
+                Tags = _context.ProductTags.Where(p => p.ProductId == product.Id).Include(tag => tag.Tag).Select(tag => tag.Tag).ToList(),
+            }).FirstOrDefault();
+
+            return product;
+        }
+
     }
 }

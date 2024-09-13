@@ -1,1 +1,167 @@
-﻿<h1> All Product Show the User</h1>
+﻿@using System.Security.Claims;
+@model IEnumerable<ProductResponse>
+
+@{
+    ViewBag.Tile = "Product";
+}
+
+<div>
+    <input type="hidden" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" id="userId" />
+    @{
+        foreach(var product in Model)
+        {
+                <div class="card" style="width: 18rem;">
+                    <img src="~/Products/@product.FeatureImageURL" class="card-img-top" alt="Image">
+                    <div class="card-body">
+                        <input type="hidden" value="@product.Id"/>
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">@product.Description</p>
+                        <p class="card-text">@product.Price</p>
+                        <div class="d-flex flex justify-content-between">
+                            <button type="button" class="btn btn-primary" onclick="showDetails(@Html.Raw(Json.Serialize(product.Id)))" data-toggle="modal" data-target="#exampleModalCenter">Details</button>
+                            <i class="fa-regular fa-bookmark h3 bookmark-icon" role="button" data-product-id="@product.Id" data-user-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)"></i>
+                        </div>
+                    </div>
+                </div>
+        }
+    }
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ProductModal" tabindex="-1" role="dialog" aria-labelledby="ProductModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ProductModalTitle">Product Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="modalProductImage" src="" class="img-fluid mb-3 zoom" alt="Product Image" />
+                <h5 id="modalProductName"></h5>
+                <p id="modalProductDescription"></p>
+                <p id="modalProductPrice"></p>
+
+
+                <!-- Additional Images -->
+                <div id="additionalImages" class="mt-3">
+                    <h6>Additional Images:</h6>
+                    <div class="row" id="imageGallery"></div>
+                </div>
+
+                <!-- Tags -->
+                <div id="productTags" class="mt-3">
+                    <h6>Tags:</h6>
+                    <ul id="tagList"></ul>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+
+        $(document).ready(function () {
+            // Handle the bookmark icon click
+            $('.bookmark-icon').on('click', function () {
+                const productId = $(this).data('product-id');
+                const userId = $(this).data('user-id');
+                console.log(productId, userId);
+                const icon = $(this);
+
+                icon.toggleClass('fa-solid');
+
+                let isAdding = icon.hasClass('fa-solid');
+
+                $.ajax({
+                    url: isAdding ? '/Wishlist/Add' : '/Wishlist/Remove',
+                    type: 'POST',
+                    data: JSON.stringify({ productId: productId , UserId : userId }),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        console.log(response.message);
+                    },
+                    error: function () {
+                        alert('Error updating Wishlist.');
+                    }
+                });
+            });
+
+            const userId = $('#userId').val();
+
+            console.log(userId);
+
+            $.ajax({
+                url: `/Wishlist/GetWishlistByUserId?userId=${userId}` ,
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response);
+
+                    $('.card').each(function () {
+                        const productId = $(this).find('input[type="hidden"]').val();
+                        console.log(productId); 
+                        if (response.some(item => item.productId == productId)) {
+
+                            $(this).find('.fa-bookmark').addClass('fa-solid');
+                        }
+                    });
+
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Error Fetching Wishlist.');
+                }
+            });
+
+
+
+        });
+
+        function showDetails(productId) {
+            $.ajax({
+                url: `/Product/GetProductById?productId=${productId}`,
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response.product)
+                    console.log(response.product.featureImageURL)
+                    // Set the modal content dynamically
+                    $('#modalProductImage').attr('src', '/Products/' + response.product.featureImageURL);
+                    $('#modalProductName').text(response.product.name);
+                    $('#modalProductDescription').text(response.product.description);
+                    $('#modalProductPrice').text('$' + response.product.price);
+
+                    $('#imageGallery').empty();
+                    $('#tagList').empty();
+
+                    // Populate additional images
+                    response.product.imagesURL.forEach(function (imageUrl) {
+                        $('#imageGallery').append(`<div class="col-md-4"><img src="/Products/${imageUrl}" data-magnify-src="/Products/${imageUrl}"  class="img-fluid w-20 h-20 zoom" alt="Additional Image"></div>`);
+                    });
+
+                    // Populate tags
+                    response.product.tags.forEach(function (tag) {
+                        $('#tagList').append(`<li>${tag.name}</li>`);
+                    });
+
+
+                    // Show the modal
+                    $('#ProductModal').modal('show');
+                },
+                error: function () {
+                    alert('Error fetching product details.');
+                }
+            });
+        }
+    </script>
+
+}

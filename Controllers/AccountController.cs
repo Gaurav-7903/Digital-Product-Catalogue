@@ -1,4 +1,4 @@
-﻿using Digital_Product_Catalogue.Areas.Admin.Controllers;
+﻿
 using Digital_Product_Catalogue.DTOs;
 using Digital_Product_Catalogue.Enums;
 using Digital_Product_Catalogue.Models;
@@ -23,12 +23,14 @@ namespace Digital_Product_Catalogue.Controllers
         }
 
         [HttpGet]
+        [Authorize("NotAuthorized")]
         public IActionResult Register()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize("NotAuthorized")]
         public async Task<IActionResult> Register(RegisterDTO registerDTO)
         {
             if (!ModelState.IsValid)
@@ -79,12 +81,14 @@ namespace Digital_Product_Catalogue.Controllers
         }
 
         [HttpGet]
+        [Authorize("NotAuthorized")]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize("NotAuthorized")]
         public async Task<IActionResult> Login(LoginDTO loginDTO, string? ReturnUrl)
         {
             if (!ModelState.IsValid)
@@ -104,7 +108,7 @@ namespace Digital_Product_Catalogue.Controllers
             // check user in admin or not
 
             ApplicationUser? userForRole = await _userManager.FindByEmailAsync(loginDTO.Email);
-            if (user != null)
+            if (userForRole != null)
             {
                 if (await _userManager.IsInRoleAsync(userForRole, UserRoleOptions.Admin.ToString()))
                 {
@@ -127,6 +131,8 @@ namespace Digital_Product_Catalogue.Controllers
             return RedirectToAction(nameof(AccountController.Login), "Account");
         }
 
+        [AllowAnonymous]
+        [Authorize("NotAuthorized")]
         public async Task<IActionResult> IsEmailAlreadyRegister(string email)
         {
             ApplicationUser? user = await _userManager.FindByEmailAsync(email);

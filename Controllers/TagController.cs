@@ -1,13 +1,10 @@
-﻿using Digital_Product_Catalogue.Data;
-using Digital_Product_Catalogue.DTOs;
+﻿using Digital_Product_Catalogue.DTOs;
 using Digital_Product_Catalogue.Models;
 using Digital_Product_Catalogue.ServiceContract;
-using Digital_Product_Catalogue.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Digital_Product_Catalogue.Areas.Admin.Controllers
+namespace Digital_Product_Catalogue.Controllers
 {
-    [Area("Admin")]
     [Route("[controller]/[action]")]
     public class TagController : Controller
     {
