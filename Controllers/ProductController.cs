@@ -23,6 +23,7 @@ namespace Digital_Product_Catalogue.Controllers
         public IActionResult Products()
         {
             var products = _productService.GetAllProducts();
+            ViewBag.Tags = _tagService.GetAllTags();
             return View(products);
         }
 
@@ -60,6 +61,19 @@ namespace Digital_Product_Catalogue.Controllers
             return Ok(new { product });
         }
 
+        // Filter Product Data 
+        public IActionResult FilterProducts([FromBody] FilterProductDTO filterProduct)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+            IEnumerable<ProductResponse> filteredProducts = _productService.GetFilteredProducts(filterProduct.SearchText, filterProduct.MinPrice, filterProduct.MaxPrice, filterProduct.TagList);
+
+            return PartialView("_ProductList", filteredProducts);
+        }
+
+            
 
         public async Task<List<string>> GetImagesURL(List<IFormFile> Images)
         {

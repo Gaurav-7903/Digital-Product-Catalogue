@@ -1,0 +1,34 @@
+﻿@model WishlistItemResponseDTO
+
+@{
+    ViewBag.Title = "Wishlist Item";
+}
+
+<h3> WishList </h3>
+
+<div class="container mb-2">
+    @{
+        foreach(var product in Model.products)
+        {
+            <div class="border rounded row d-flex mb-4 p-3">
+                <div class="w-25">
+                    <img src="/Products/@product.FeatureImageURL" />
+                </div>
+                <div class="w-75">
+                    <h5>@product.Name</h5>
+                    <p>@product.Description</p>
+                    <p>@product.Price</p>
+
+                    @foreach(var tag in product.Tags)
+                    {
+                        <span class="border rounded my-2 p-1">@tag.Name</span>
+                    }
+                </div>
+            </div>
+        }
+    }
+    <div>
+        <a asp-action="DownloadWishlist" asp-controller="wishlist"><button class="btn btn-dark"> Download Wishlist </button></a>
+        
+    </div>
+</div>

@@ -1,10 +1,12 @@
 ﻿// Ignore Spelling: Wishlist
 
 using Digital_Product_Catalogue.Data;
+using Digital_Product_Catalogue.DTOs;
 using Digital_Product_Catalogue.Models;
 using Digital_Product_Catalogue.ServiceContract;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace Digital_Product_Catalogue.Services
 {
@@ -45,18 +47,46 @@ namespace Digital_Product_Catalogue.Services
             }
         }
 
-        public async Task<IEnumerable<Wishlist>> GetWishlistsByUserId(string userId)
+        public async Task<IEnumerable<Wishlist>> GetWishlistsProductIdByUserId(int userId)
         {
-            var userRecord = await _userManager.FindByIdAsync(userId);
+            var userRecord = await _userManager.FindByIdAsync(userId.ToString());
 
             if (userRecord == null)
             {
                 throw new Exception("User Not Found");
             }
 
-            var WishlistProductOfUser = await _context.Wishlists.Where(w => w.UserId == userRecord.Id).ToListAsync();
+            var WishlistProductItemIdOfUser = await _context.Wishlists.Where(w => w.UserId == userRecord.Id).ToListAsync();
+
+            return WishlistProductItemIdOfUser;
+        }
+
+        public async Task<WishlistItemResponseDTO> GetWishlistProduct(int userId)
+        {
+            var userRecord = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (userRecord == null)
+            {
+                throw new Exception("User Not Found");
+            }
+
+            var WishlistProductOfUser = new WishlistItemResponseDTO()
+            {
+                userId = userId,
+                products = _context.Wishlists.Where(w => w.UserId == userRecord.Id).Include(pid => pid.Product).ThenInclude(product => product.Tags).Select(product => new ProductResponse
+                {
+                    Id = product.Id,
+                    Name = product.Product.Name,
+                    Description = product.Product.Description,
+                    Price = product.Product.Price,
+                    FeatureImageURL = product.Product.FeatureImage,
+                    ImagesURL = product.Product.Images.Select(pi => pi.ImageURL).ToList(),
+                    Tags = product.Product.Tags.Select(pt => pt.Tag).ToList(),
+                }).ToList(),
+            };
 
             return WishlistProductOfUser;
+
         }
     }
 }

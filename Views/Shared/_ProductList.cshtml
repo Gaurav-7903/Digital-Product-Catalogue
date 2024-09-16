@@ -1,0 +1,28 @@
+﻿@using System.Security.Claims;
+@model IEnumerable<ProductResponse>
+
+<div class=" d-flex flex-wrap gap-3">
+    @{
+        foreach (var product in Model)
+        {
+            <div class="card" style="width: 16rem;">
+                <div class="h-50 w-50 align-content-center justify-content-center m-auto">
+                    <img src="/Products/@product.FeatureImageURL" class="card-img-top object-fit-cover productImage" alt="Image" id="featureImageProduct">
+                </div>
+                <div class="card-body">
+                    <input type="hidden" value="@product.Id" />
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text">@product.Price</p>
+                    <div class="d-flex flex justify-content-between">
+                        <button type="button" class="btn btn-primary" onclick="showDetails(@Html.Raw(Json.Serialize(product.Id)))" data-toggle="modal" data-target="#exampleModalCenter">Details</button>
+                        @if (!User.IsInRole("Admin"))
+                        {
+                            <i class="fa-regular fa-bookmark h3 bookmark-icon" role="button" data-product-id="@product.Id" data-user-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)"></i>  
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>  

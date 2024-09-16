@@ -105,16 +105,16 @@ namespace Digital_Product_Catalogue.Controllers
                 return View(loginDTO);
             }
 
-            // check user in admin or not
+            //// check user in admin or not
 
-            ApplicationUser? userForRole = await _userManager.FindByEmailAsync(loginDTO.Email);
-            if (userForRole != null)
-            {
-                if (await _userManager.IsInRoleAsync(userForRole, UserRoleOptions.Admin.ToString()))
-                {
-                    return RedirectToAction("Products", "Product", new { area = "Admin" });
-                }
-            }
+            //ApplicationUser? userForRole = await _userManager.FindByEmailAsync(loginDTO.Email);
+            //if (userForRole != null)
+            //{
+            //    if (await _userManager.IsInRoleAsync(userForRole, UserRoleOptions.Admin.ToString()))
+            //    {
+            //        return RedirectToAction("Products", "Product");
+            //    }
+            //}
 
             if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
             {

@@ -10,5 +10,6 @@ namespace Digital_Product_Catalogue.ServiceContract
         List<ProductResponse> GetAllProducts();
 
         ProductResponse GetProductById(int productId);
+        IEnumerable<ProductResponse> GetFilteredProducts(string? search, decimal? minPrice, decimal? maxPrice, List<int>? tags);
     }
 }

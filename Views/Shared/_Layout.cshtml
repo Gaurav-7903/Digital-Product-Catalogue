@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Digital_Product_Catalogue</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/Digital_Product_Catalogue.styles.css" asp-append-version="true" />
+@*      <link rel="stylesheet" href="~/Digital_Product_Catalogue.styles.css" asp-append-version="true" /> *@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
@@ -51,6 +51,7 @@
                     @{
                         if (User.Identity.IsAuthenticated)
                         {
+                           
                             <p class="text-center my-auto"> @User.Identity?.Name </p>
                             <a asp-controller="Account" asp-action="Logout"><button class="btn btn-outline-danger mx-2">Logout</button></a>
                         }
@@ -72,13 +73,9 @@
         </main>
     </div>
     @await Component.InvokeAsync("CompanyInfo", new { viewName = "Footer" })
-    @* <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - Digital_Product_Catalogue - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnify/2.3.3/js/jquery.magnify.min.js" integrity="sha512-YKxHqn7D0M5knQJO2xKHZpCfZ+/Ta7qpEHgADN+AkY2U2Y4JJtlCEHzKWV5ZE87vZR3ipdzNJ4U/sfjIaoHMfw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

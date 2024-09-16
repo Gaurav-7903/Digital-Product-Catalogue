@@ -118,7 +118,7 @@ namespace Digital_Product_Catalogue.Services
 
         public ProductResponse GetProductById(int productId)
         {
-            if(productId <= 0)
+            if (productId <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(productId));
             }
@@ -136,5 +136,46 @@ namespace Digital_Product_Catalogue.Services
             return product;
         }
 
+        // Get Filter Product
+        public IEnumerable<ProductResponse> GetFilteredProducts(string? search, decimal? minPrice, decimal? maxPrice, List<int>? tags)
+        {
+            var query = _context.Products
+                .Include(p => p.Tags)
+                .Include(p => p.Images)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(p => p.Name.Contains(search) || p.Description.Contains(search));
+            }
+
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+
+            if (tags != null && tags.Any())
+            {
+                query = query.Where(p => p.Tags.Any(t => tags.Contains(t.TagId)));
+            }
+
+            var products = query.ToList(); // Execute query
+
+            return products.Select(product => new ProductResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                FeatureImageURL = product.FeatureImage,
+                ImagesURL = product.Images.Select(pi => pi.ImageURL).ToList(),
+                Tags = product.Tags.Select(pt => pt.Tag).ToList(),
+            });
+        }
     }
 }

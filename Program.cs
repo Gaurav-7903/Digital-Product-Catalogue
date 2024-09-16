@@ -64,6 +64,9 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
+Rotativa.AspNetCore.RotativaConfiguration.Setup("wwwroot", wkhtmltopdfRelativePath: "Rotativa");
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -73,6 +76,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Product}/{action=AddProduct}/{id?}");
+
+// PDF Generator Setup
 
 app.MapControllerRoute(
     name: "default",

@@ -1,4 +1,5 @@
 ﻿
+using Digital_Product_Catalogue.DTOs;
 using Digital_Product_Catalogue.Models;
 
 namespace Digital_Product_Catalogue.ServiceContract
@@ -8,6 +9,7 @@ namespace Digital_Product_Catalogue.ServiceContract
         Task AddToWishlist(int userId, int productId);
         Task RemoveFromWishlist(int userId, int productId);
 
-        Task<IEnumerable<Wishlist>> GetWishlistsByUserId(string userId);
+        Task<IEnumerable<Wishlist>> GetWishlistsProductIdByUserId(int userId);
+        Task<WishlistItemResponseDTO> GetWishlistProduct(int userId);
     }
 }

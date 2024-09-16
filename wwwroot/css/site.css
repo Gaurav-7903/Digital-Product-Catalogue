@@ -31,3 +31,66 @@ body {
     border: 1px solid #ced4da;
     border-radius: .25rem;
 }
+
+
+#tagList {
+    display: flex;
+    gap: 10px;
+}
+
+#tagList li {
+    border-radius: 2px;
+    list-style: none;
+    background: #cdcdcd;
+    padding-inline: 10px;
+}
+
+#wishlistCountIcon{
+    transform: scale(1.5);
+}
+
+.modal-dialog{
+    max-width : 800px !important;
+}
+
+.gallery-image{
+    height:7rem;
+    width:7rem;
+}
+
+img.gallery-image {
+    object-fit: contain;
+}
+
+.zoomContainer {
+    z-index: 1060; /* Make sure it's above the modal */
+}
+
+
+.sidebar{
+    height : 90vh;
+    overflow-y : scroll;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+#modalProductImage, #featureImageProduct{
+    object-fit : cover;
+}
+
+#modalProductImage:hover {
+    transform: scale(1.2);
+    transition : ease-in all;
+}
+
+img.gallery-image:hover {
+    transform: scale(1.1);
+    transition: ease-in all;
+}
+
+#featureImageProduct:hover {
+    transform: scale(1.2);
+    transition: ease-in all;
+}

@@ -5,26 +5,25 @@
     ViewBag.Tile = "Product";
 }
 
-<div>
+<div class="row">
+    <!-- Side Bar For Filter -->
+    <aside class="col-md-3 border rounded sidebar">  @await Html.PartialAsync("_SidebarFilter") </aside>
     <input type="hidden" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" id="userId" />
-    @{
-        foreach(var product in Model)
-        {
-                <div class="card" style="width: 18rem;">
-                    <img src="~/Products/@product.FeatureImageURL" class="card-img-top" alt="Image">
-                    <div class="card-body">
-                        <input type="hidden" value="@product.Id"/>
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">@product.Description</p>
-                        <p class="card-text">@product.Price</p>
-                        <div class="d-flex flex justify-content-between">
-                            <button type="button" class="btn btn-primary" onclick="showDetails(@Html.Raw(Json.Serialize(product.Id)))" data-toggle="modal" data-target="#exampleModalCenter">Details</button>
-                            <i class="fa-regular fa-bookmark h3 bookmark-icon" role="button" data-product-id="@product.Id" data-user-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)"></i>
-                        </div>
-                    </div>
+
+    <div class="col-md-9">
+            @if (!User.IsInRole("Admin"))
+            {
+                <div class="d-flex justify-content-end mb-3">
+                    <a asp-action="WishlistItem" asp-controller="Wishlist">
+                        <p class="text-center my-auto mr-4" id="wishlistCountIcon"><i class="fa-solid fa-heart"></i><span id="wishlistCount">0</span></p>
+                    </a>
                 </div>
-        }
-    }
+            
+            }
+            <div id="prouctList" >
+                @await Html.PartialAsync("_ProductList")
+            </div>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -38,7 +37,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <img id="modalProductImage" src="" class="img-fluid mb-3 zoom" alt="Product Image" />
+                <img id="modalProductImage" src="" data-zoom-image="" class="img-fluid mb-3 zoom" alt="Product Image" />
                 <h5 id="modalProductName"></h5>
                 <p id="modalProductDescription"></p>
                 <p id="modalProductPrice"></p>
@@ -53,7 +52,7 @@
                 <!-- Tags -->
                 <div id="productTags" class="mt-3">
                     <h6>Tags:</h6>
-                    <ul id="tagList"></ul>
+                    <ul id="tagList" class=""></ul>
                 </div>
 
             </div>
@@ -66,10 +65,40 @@
 </div>
 
 @section Scripts{
-
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
+ 
     <script>
 
+        function initializeZoom() {
+            $('#modalProductImage').elevateZoom({
+                zoomType: "lens",
+                lensShape: "round",
+                lensSize: 300,
+                zoomContainer: '#ProductModal',
+                zoomLevel:3,
+                scrollZoom: true,
+                zoomWindowHeight: 200,      
+                zoomWindowWidth: 200,
+                cursor: 'pointer',
+            });
+            $('#modalProductImage').trigger('mouseover');
+        }
+
+        function destroyZoom() {
+            var $image = $('#modalProductImage');
+            if ($image.data('elevateZoom')) {
+                console.log("Destroying Zoom");
+                $.removeData($image, 'elevateZoom'); 
+                $('.zoomContainer').remove();
+                $image.removeData('zoomImage'); 
+            }
+        }
+
+
         $(document).ready(function () {
+            const userId = $('#userId').val();
+            var timeout;
+
             // Handle the bookmark icon click
             $('.bookmark-icon').on('click', function () {
                 const productId = $(this).data('product-id');
@@ -88,29 +117,84 @@
                     contentType: 'application/json',
                     success: function (response) {
                         console.log(response.message);
+                        if(isAdding){
+                            $('#wishlistCount').html(parseInt($("#wishlistCount").text(), 10) + 1);
+                        }else{
+                            $('#wishlistCount').html(parseInt($("#wishlistCount").text(), 10) - 1);
+                        }
                     },
                     error: function () {
-                        alert('Error updating Wishlist.');
+                        console.log('Error updating Wishlist.');
                     }
                 });
             });
 
-            const userId = $('#userId').val();
+            // Handle Event on input Search and price
+            $('#search-input, #min-price, #max-price').on('input', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(applyFilter, 2000); // Delay for 1s
+            });
 
-            console.log(userId);
+            // Handle event on check box 
+            $('.tag-checkbox').on('click', function () {
+                console.log("Change..")
+                applyFilter(userId);
+            });
 
+            // Fetching User WishList
+            GetUserWishList(userId);
+
+            $("#min-price").on('input', function(){
+                console.log(this);
+                console.log($("#min-price").val());
+                $("#max-price").attr('min', $("#min-price").val())
+
+            })
+
+            $("#max-price").on('input', function () {
+                console.log(this);
+                console.log($("#max-price").val());
+                $("#min-price").attr('max', $("#max-price").val())
+            })
+
+            // Close Modal
+            $('#closeModal , button.close').on('click', function () {
+                $('#ProductModal').modal('hide');
+            });
+        });
+
+        // Change the feature image when clicking on a gallery image
+        $(document).on('click', '.gallery-image', function () {
+            var newSrc = $(this).attr('src');
+            console.log(newSrc);
+            var zoomImageSrc = $(this).attr('data-zoom-image');
+            console.log(zoomImageSrc);
+            $('#modalProductImage').attr('src', newSrc);
+            $('#modalProductImage').attr('data-zoom-image', zoomImageSrc);
+            destroyZoom();
+            initializeZoom();
+        });
+
+        
+
+        // Fetching User Wishlist
+        function GetUserWishList(userId) {
+            console.log("UserID : ", userId);
             $.ajax({
-                url: `/Wishlist/GetWishlistByUserId?userId=${userId}` ,
+                url: `/Wishlist/GetWishlistByUserId?userId=${userId}`,
                 type: 'GET',
                 contentType: 'application/json',
                 success: function (response) {
-                    console.log(response);
+                    console.log("GetUserWishList Response" , response);
+                    console.log(parseInt($("#wishlistCount").text(), 10));
+                    $('#wishlistCount').html(parseInt($("#wishlistCount").text(), 10) + response.length);
 
                     $('.card').each(function () {
+                        console.log(this);
                         const productId = $(this).find('input[type="hidden"]').val();
-                        console.log(productId); 
+                        console.log("In Response : ",productId);
                         if (response.some(item => item.productId == productId)) {
-
+                            console.log("Mathced");
                             $(this).find('.fa-bookmark').addClass('fa-solid');
                         }
                     });
@@ -121,11 +205,45 @@
                     alert('Error Fetching Wishlist.');
                 }
             });
+        }
 
+        // Applying filter
+        function applyFilter(userId) {
+            var searchText = $('#search-input').val();
+            var minPrice = $('#min-price').val();
+            var maxPrice = $('#max-price').val();
+            var selectedTags = [];
 
+            $('.tag-checkbox:checked').each(function () {
+                selectedTags.push(parseInt($(this).val()));
+            });
 
-        });
+            var filterData = {
+                SearchText: searchText.trim(),
+                MinPrice: minPrice ? parseFloat(minPrice) : null, 
+                MaxPrice: maxPrice ? parseFloat(maxPrice) : null, 
+                TagList: selectedTags.length > 0 ? selectedTags : null 
+            };
 
+            console.log("Filter Data:", filterData); 
+
+            $.ajax({
+                url: '/Product/FilterProducts',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(filterData),
+                success: function (response) {
+                    console.log(response);
+                    $('#prouctList').html(response);
+                    GetUserWishList(userId);
+                },
+                error: function () {
+                    alert('Error applying filter');
+                }
+            });
+        }
+        
+        // Modal (Show Product Details)
         function showDetails(productId) {
             $.ajax({
                 url: `/Product/GetProductById?productId=${productId}`,
@@ -139,13 +257,14 @@
                     $('#modalProductName').text(response.product.name);
                     $('#modalProductDescription').text(response.product.description);
                     $('#modalProductPrice').text('$' + response.product.price);
+                    $('#modalProductImage').attr('data-zoom-image', `/Products/${response.product.featureImageURL}`);
 
                     $('#imageGallery').empty();
                     $('#tagList').empty();
 
                     // Populate additional images
                     response.product.imagesURL.forEach(function (imageUrl) {
-                        $('#imageGallery').append(`<div class="col-md-4"><img src="/Products/${imageUrl}" data-magnify-src="/Products/${imageUrl}"  class="img-fluid w-20 h-20 zoom" alt="Additional Image"></div>`);
+                        $('#imageGallery').append(`<div class="col-md-4"><img src="/Products/${imageUrl}" data-zoom-image="/Products/${imageUrl}"  class="img-fluid zoom gallery-image" alt="Additional Image"></div>`);
                     });
 
                     // Populate tags
@@ -153,9 +272,11 @@
                         $('#tagList').append(`<li>${tag.name}</li>`);
                     });
 
-
+                    destroyZoom();
+                    initializeZoom();
                     // Show the modal
                     $('#ProductModal').modal('show');
+                   
                 },
                 error: function () {
                     alert('Error fetching product details.');
