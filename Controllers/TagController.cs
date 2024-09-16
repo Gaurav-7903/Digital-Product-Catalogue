@@ -16,8 +16,8 @@ namespace Digital_Product_Catalogue.Controllers
 
         public IActionResult Index()
         {
-            //var tags = _tagService.GetAllTags();
-            return View();
+            var tags = _tagService.GetAllTags();
+            return View(tags);
         }
 
         [HttpPost]

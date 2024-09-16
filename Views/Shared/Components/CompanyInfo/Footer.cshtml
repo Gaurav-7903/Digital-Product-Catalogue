@@ -3,14 +3,12 @@
 <footer class="border-top footer text-muted">
     <div class="container flex">
         <div class="w-75 my-auto">
-            &copy; 2024 - @Model.Name
+            &copy; 2024 - @(Model != null ? Model.Name ?? "Default Company Name" : "Default Company Name")
         </div>
         <div>
-            <p> @Model.EmailAddress </p>
-            <p> @Model.Website </p>
-            <p> @Model.Address</p>
+            <p>@(Model != null ? Model.EmailAddress ?? "No Email Available" : "No Email Available")</p>
+            <p>@(Model != null ? Model.Website ?? "No Website Available" : "No Website Available")</p>
+            <p>@(Model != null ? Model.Address ?? "No Address Available" : "No Address Available")</p>
         </div>
-        
     </div>
-
 </footer>

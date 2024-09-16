@@ -30,9 +30,16 @@
         <div class="form-group mb-3">
             <label for="Tags">Tag</label>
             <select multiple class="selectpicker" data-live-search="true" asp-for="Tags">
-                @foreach (var Tag in ViewBag.Tags)
+                @if (ViewBag.Tags != null)
                 {
-                    <option value="@Tag.Id">@Tag.Name</option>
+                    @foreach (var tag in ViewBag.Tags)
+                    {
+                        <option value="@tag.Id">@tag.Name</option>
+                    }
+                }
+                else
+                {
+                    <option disabled>No tags available</option>
                 }
             </select>
         </div>
@@ -40,7 +47,7 @@
         <!-- Image Selection -->
         <div class="form-group mb-3">
             <label for="Images">Upload Images</label>
-            <input class="form-control" type="file" asp-for="Images" multiple>
+            <input class="form-control" type="file" asp-for="Images" multiple accept="image/*">
             <span asp-validation-for="Images" class="danger"></span>
         </div>
 
@@ -99,7 +106,7 @@
                         $lastItem.data('tag', search);
                     } else {
 
-                        $dropdownMenu.append(`<li class="add-tag dropdown-item">Add "${search}" as a new tag</li>`);
+                        $dropdownMenu.append(`<li class="add-tag dropdown-item" data-tag="${search}">Add "${search}" as a new tag</li>`);
                     }
                 } else {
                     

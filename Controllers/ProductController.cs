@@ -41,12 +41,14 @@ namespace Digital_Product_Catalogue.Controllers
 
             if (!ModelState.IsValid)
             {
+                var tags = _tagService.GetAllTags();
+                ViewBag.Tags = tags;
                 return View(productRequest);
             }
 
             ProductResponse productResponse = await _productService.AddProduct(productRequest);
 
-            return RedirectToAction("Products", "Product", new { area = "Admin" });
+            return RedirectToAction("Products", "Product");
         }
 
         [HttpGet]

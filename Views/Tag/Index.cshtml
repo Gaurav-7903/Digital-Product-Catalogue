@@ -1,38 +1,22 @@
-﻿@model TagRequest
+﻿@model IEnumerable<Tag>
 
 @{
     ViewBag.Title = "Add Tag";
 }
 
 <div class="w-75 mx-auto d-flex flex-column">
-
-
-    <form asp-action="AddTag" asp-controller="Tag" method="post">
+    <form id="AddTagForm">
         <div class="form-group mb-3">
-            <label asp-for="Name">Tag Name</label>
-            <input class="form-control" asp-for="Name" placeholder="Enter Tag Name">
-            <span asp-validation-for="Name" class="danger"></span>
+            <label for="Name">Tag Name</label>
+            <input class="form-control" id="Name" placeholder="Enter Tag Name">
+            <span id="NameError" class="danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create</button>
-
-        <div asp-validation-summary="All" class="error"></div>
-
-        @if (ViewBag.Errors != null)
-        {
-            <div class="danger ml">
-                <ul>
-                    @foreach (string error in ViewBag.Errors)
-                    {
-                        <li class="ml">@error</li>
-                    }
-                </ul>
-            </div>
-        }
+        <button type="submit" class="btn btn-primary">Add Tag</button>
     </form>
 </div>
 
-@* <table class="table table-striped shadow-sm p-3 my-2 rounded p-3" id="TagTable">
+<table class="table table-striped shadow-sm p-3 my-2 rounded p-3" id="TagTable">
     <thead>
         <tr>
             <th>Tag ID</th>
@@ -41,7 +25,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var tag in Model.Tags)
+        @foreach (var tag in Model)
         {
             <tr>
                 <td>@tag.Id</td>
@@ -50,6 +34,49 @@
             </tr>
         }
     </tbody>
-</table> *@
+</table>
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#AddTagForm').on('submit', function (event) {
 
+                event.preventDefault();
+                console.log("print");
+                var tagName = $('#Name').val().trim();
+                var nameError = $('#NameError');
+                if (!tagName) {
+                    nameError.text('Tag Name cannot be empty');
+                    return;
+                } else {
+                    nameError.text('');
+                }
+
+                // Make the AJAX request
+                $.ajax({
+                    url: '@Url.Action("AddTag", "Tag")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ Name: tagName }),
+                    success: function (response) {
+                        if (response && response.tag) {
+                            var newRow = $('<tr>').append(
+                                $('<td>').text(response.tag.id),
+                                $('<td>').text(response.tag.name),
+                                $('<td>').text(new Date(response.tag.createdAt).toDateString()),
+                            );
+                            $('#TagTable tbody').append(newRow);
+                            $('#Name').val('');
+                        } else {
+                            console.error('Unexpected response format:', response);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error adding tag:', error);
+                    }
+                });
+            });
+        });
+    </script>
+
+}

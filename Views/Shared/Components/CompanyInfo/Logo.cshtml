@@ -1,5 +1,19 @@
 ﻿@model CompanyResponseDTO
 
+@{
+    // Declare variables with default values
+    var srcOfImage = "/default-logo.png";
+    var altText = "No Name Available";
 
-<img src="/Products/@Model.LogoURL" alt="@Model.Name" class="company-logo" width="30" height="30" />
+    // Check if Model is not null
+    if (Model != null)
+    {
+        // Determine the image source and alt text
+        srcOfImage = string.IsNullOrEmpty(Model.LogoURL)
+                     ? "/default-logo.png"
+                     : $"/Products/{Model.LogoURL}";
+        altText = string.IsNullOrEmpty(Model.Name) ? "Company Name" : Model.Name;
+    }
+}
 
+<img src="@srcOfImage" alt="@altText" class="company-logo" width="30" height="30" />
