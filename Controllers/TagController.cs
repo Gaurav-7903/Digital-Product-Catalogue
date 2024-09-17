@@ -36,7 +36,7 @@ namespace Digital_Product_Catalogue.Controllers
 
             Tag tag = _tagService.AddTag(tagRequest.Name);
             return Ok(new { message = "Tag added successfully", tag });
-            //return RedirectToAction("Index", "Product", new { area = "Admin" });
+            //return RedirectToAction("Index", "Product");
         }
     }
 }

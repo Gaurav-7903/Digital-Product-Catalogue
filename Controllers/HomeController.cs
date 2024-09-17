@@ -15,7 +15,8 @@ namespace Digital_Product_Catalogue.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            //return View();
+            return RedirectToAction(nameof(ProductController.Products), "Product");
         }
 
         public IActionResult Privacy()

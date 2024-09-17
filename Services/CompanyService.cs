@@ -29,7 +29,7 @@ namespace Digital_Product_Catalogue.Services
             {
                 Name = companyRequest.Name,
                 Address = companyRequest.Address,
-                EmailAddress = companyRequest.EmailAddress,
+                EmailAddress = companyRequest.EmailAddress, 
                 Information = companyRequest.Information,
                 MobileNumber = companyRequest.MobileNumber,
                 Website = companyRequest.Website,
@@ -52,7 +52,7 @@ namespace Digital_Product_Catalogue.Services
 
         public async Task<CompanyResponseDTO> GetCompanyInfo()
         {
-            var companyInfo = _context.CompanyInfo.Select(company => new CompanyResponseDTO()
+            var companyInfo = _context.CompanyInfo.OrderBy(c => c.Id).Select(company => new CompanyResponseDTO()
             {
                 Name = company.Name,
                 Address = company.Address,
@@ -61,7 +61,7 @@ namespace Digital_Product_Catalogue.Services
                 MobileNumber = company.MobileNumber,
                 Website = company.Website,
                 LogoURL = company.LogoUrl,
-            }).FirstOrDefault();
+            }).LastOrDefault();
 
             return companyInfo;
         }

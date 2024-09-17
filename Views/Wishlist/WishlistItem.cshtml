@@ -5,6 +5,7 @@
 }
 
 <h3> WishList </h3>
+<a asp-action="Products" asp-controller="Product"><p>Back To Products</p></a>
 
 <div class="container mb-2">
     @{
@@ -12,12 +13,12 @@
         {
             <div class="border rounded row d-flex mb-4 p-3">
                 <div class="w-25">
-                    <img src="/Products/@product.FeatureImageURL" />
+                    <img src="/Products/@product.FeatureImageURL" class="wishlistProductmage" />
                 </div>
                 <div class="w-75">
                     <h5>@product.Name</h5>
                     <p>@product.Description</p>
-                    <p>@product.Price</p>
+                    <p>@product.Price</p>   
 
                     @foreach(var tag in product.Tags)
                     {
@@ -28,7 +29,14 @@
         }
     }
     <div>
-        <a asp-action="DownloadWishlist" asp-controller="wishlist"><button class="btn btn-dark"> Download Wishlist </button></a>
-        
+        @if (Model.products.Any())
+        {
+            <a asp-action="DownloadWishlist" asp-controller="wishlist"><button class="btn btn-dark"> Download Wishlist </button></a>
+        }
+        else
+        {
+            <p class="text-center"> WishList is Empty </p>
+        }
+
     </div>
 </div>

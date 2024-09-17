@@ -10,7 +10,7 @@
     {
         // Determine the image source and alt text
         srcOfImage = string.IsNullOrEmpty(Model.LogoURL)
-                     ? "/default-logo.png"
+                     ? "~/default-logo.jpg"
                      : $"/Products/{Model.LogoURL}";
         altText = string.IsNullOrEmpty(Model.Name) ? "Company Name" : Model.Name;
     }

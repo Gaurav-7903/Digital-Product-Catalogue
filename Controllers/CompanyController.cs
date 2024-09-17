@@ -16,8 +16,13 @@ namespace Digital_Product_Catalogue.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddCompany()
+        public async Task<IActionResult> AddCompany()
         {
+            CompanyResponseDTO companyInfo =await _companyService.GetCompanyInfo();
+            //if (companyInfo != null)
+            //{
+            //    return View(companyInfo);
+            //}
             return View();
         }
 
@@ -34,7 +39,7 @@ namespace Digital_Product_Catalogue.Controllers
                 return View();
             }
             CompanyResponseDTO company = await _companyService.AddCompany(companyInfoDTO);
-            return RedirectToAction("Products", "Product", new { area = "Admin" });
+            return RedirectToAction("Products", "Product");
         }
     }
 }

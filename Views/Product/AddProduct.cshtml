@@ -167,7 +167,8 @@
                             let imageUrl = e.target.result;
                             let radioHtml = `
                                 <div class="form-check">
-                                <input class="form-check-input" type="radio" name="FeaturedImageIndex" id="featuredImage${i}" value="${i}">
+                                
+                                <input class="form-check-input" type="radio" name="FeaturedImageIndex" id="featuredImage${i}" value="${i}" ${i==0 ? "checked" : ""}>
                                 <label class="form-check-label" for="featuredImage${i}">
                                     <img src="${imageUrl}" alt="Image ${i}" style="width: 100px; height: 100px; object-fit: cover;"/>
                                 </label>

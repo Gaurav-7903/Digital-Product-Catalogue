@@ -80,9 +80,14 @@ img.gallery-image {
     object-fit : cover;
 }
 
+.wishlistProductmage{
+    object-fit : contain;
+    width : 90%;
+}
+
 #modalProductImage:hover {
     transform: scale(1.2);
-    transition : ease-in all;
+    transition: ease-in all;
 }
 
 img.gallery-image:hover {
@@ -93,4 +98,12 @@ img.gallery-image:hover {
 #featureImageProduct:hover {
     transform: scale(1.2);
     transition: ease-in all;
+}
+
+.danger {
+    color: #dc3545;
+}
+
+.add-tag:hover{
+    cursor : pointer
 }

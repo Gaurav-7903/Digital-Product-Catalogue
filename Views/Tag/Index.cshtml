@@ -63,7 +63,7 @@
                             var newRow = $('<tr>').append(
                                 $('<td>').text(response.tag.id),
                                 $('<td>').text(response.tag.name),
-                                $('<td>').text(new Date(response.tag.createdAt).toDateString()),
+                                $('<td>').text(new Date(response.tag.createdAt).toUTCString()),
                             );
                             $('#TagTable tbody').append(newRow);
                             $('#Name').val('');

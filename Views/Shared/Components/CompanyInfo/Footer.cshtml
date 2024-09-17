@@ -1,9 +1,9 @@
 ﻿@model CompanyResponseDTO
 
-<footer class="border-top footer text-muted">
+<footer class="border-top footer text-muted footer">
     <div class="container flex">
         <div class="w-75 my-auto">
-            &copy; 2024 - @(Model != null ? Model.Name ?? "Default Company Name" : "Default Company Name")
+            &copy; 2024 - @(Model != null ? Model.Name ?? "Company Name" : "Company Name")
         </div>
         <div>
             <p>@(Model != null ? Model.EmailAddress ?? "No Email Available" : "No Email Available")</p>
